@@ -2,6 +2,8 @@
 
 
 
+
+
 function initMap() {
   // Map options
   var options = {
@@ -11,30 +13,36 @@ function initMap() {
 
   // New map
   var map = new google.maps.Map(document.getElementById('map'), options);
+  var infoWindow = new google.maps.InfoWindow();
 
 
-  // Array of markers
-  var markers = [
-    {
-      coords: { lat: 19.3189, lng: -99.1844 },
-      iconImage: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-      content: '<h>CU</h>'
-    },
-    {
-      coords: { lat: 19.4978, lng: -99.1748 },
-      content: '<h>Arena</h>'
-    },
-    {
-      coords: { lat: 19.4352, lng: -99.1412 },
-      content: '<h>Bellas Artes</h>'
+  loadJSON(function(response) {
+
+    var json = JSON.parse(response);
+
+    for (var i = 0, length = json.length; i < length; i++) {
+      var data = json[i],
+          latLng = new google.maps.LatLng(data.lat, data.lng);
+      // Creating a marker and putting it on the map
+      var marker = new google.maps.Marker({
+        position: latLng,
+        map: map,
+        title: data.title
+      });
+
+      (function(marker, data) {
+
+        // Attaching a click event to the current marker
+        google.maps.event.addListener(marker, "click", function(e) {
+          infoWindow.setContent(data.description);
+          infoWindow.open(map, marker);
+        });
+
+      }(marker, data));
     }
-  ];
 
-  // Loop through markers
-  for (var i = 0; i < markers.length; i++) {
-    // Add marker
-    addMarker(markers[i]);
-  }
+  });
+
 
   // capturar campo
   var locationForm = document.getElementById('location-form');
@@ -75,29 +83,22 @@ function initMap() {
   }
 
 
-  // Add Marker Function
-  function addMarker(props) {
-    var marker = new google.maps.Marker({
-      position: props.coords,
-      map: map,
-      //icon:props.iconImage
-    });
+  function loadJSON(callback) {
 
-    // Check for customicon
-    if (props.iconImage) {
-      // Set icon image
-      marker.setIcon(props.iconImage);
-    }
+      var xobj = new XMLHttpRequest();
+      xobj.overrideMimeType("application/json");
+      xobj.open('GET', 'locations.json', true);
+      xobj.onreadystatechange = function() {
+          if (xobj.readyState == 4 && xobj.status == "200") {
+              // .open will NOT return a value but simply returns undefined in async mode so use a callback
+              callback(xobj.responseText);
 
-    // Check content
-    if (props.content) {
-      var infoWindow = new google.maps.InfoWindow({
-        content: props.content
-      });
+          }
+      }
+      xobj.send(null);
 
-      marker.addListener('click', function () {
-        infoWindow.open(map, marker);
-      });
-    }
   }
+
+
+
 }
