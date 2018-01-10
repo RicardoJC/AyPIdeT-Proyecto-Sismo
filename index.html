@@ -23,44 +23,32 @@
 <body>
   <!-- barra de navegación (template) -->
   <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="#">Inicio</a>
+    <a class="navbar-brand" href="#">Ayuda en terremoto #CDMX</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
       aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-
-<!--
-      <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" id="location-query" type="text" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-      </form>
--->
     </div>
   </nav>
 
 
-<div class="row container">
-    <div class="col-sm-12" >
+<div class="form-inline">
+    <div class="col-sm-8" >
       <h1>Ayuda en terremoto #CDMX</h1>
       <!-- pintar mapa en la página -->
       <div id="map"></div>
-<br>
-
     </div>
-	<div class="col-sm-6">
-		<form class="form-inline my-2 my-lg-0" id="location-form">
-        <input class="form-control mr-sm-2" id="location-input" type="text" placeholder="Search" aria-label="Search">
-
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-      </form>
-      <div id="ltnlng"></div>
-	</div>
-
+    <div class="col-sm-4">
+      <a class="twitter-timeline"  href="https://twitter.com/hashtag/19S" data-widget-id="950795921834553344">Tweets sobre #19S</a>
+    </div>
 </div>
+
 
   <!-- script para configurar el mapa -->
   <script src="foo.js"></script>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
 
   <!-- Google maps javascript API
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR-KEY&callback=initMap">

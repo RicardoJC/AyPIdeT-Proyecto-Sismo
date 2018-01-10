@@ -18,18 +18,20 @@ def haversine(lon1, lat1, lon2, lat2):
     return km
 
 def group(locations, threshold = 2,precision=8):
-    hashes = []
-    for location in locations:
-        hashes.append(geohash2.encode(location['lat'],location['lng'],precision=precision))
+    hashes = {}
+    for loc in locations:
+        hashes[loc] = geohash2.encode(locations[loc]['lat'],locations[loc]['lng'],precision=precision)
+
     already = {}
-    for hash in hashes:
-        prefix = hash[:-threshold:]
-        if prefix not in already:
-            already.update({prefix:hash})
-    new_locations = []
-    for hash in already.values():
-        coord = geohash2.decode(hash)
-        new_locations.append({'lat':float(coord[0]),'lng':float(coord[1])})
+    for loc in hashes:
+        prefix = hashes[loc][:-threshold:]
+        if prefix not in already.values():
+            already[loc] = {prefix:hashes[loc]}
+    new_locations = {}
+    for loc in already:
+        for hash in already[loc]:
+                coord = geohash2.decode(hash)
+        new_locations[loc] = {'lat':float(coord[0]),'lng':float(coord[1])}
     return new_locations
 
 def plot_loc(locations,name):
@@ -43,19 +45,28 @@ def plot_loc(locations,name):
     gmap.draw(name)
 
 def remove_zeros(locations):
-    clean_locations = []
-    for coord in locations:
-        if coord["lng"] != 0:
-            clean_locations.append(coord)
+    clean_locations = {}
+    for loc in locations:
+        for coord in locations[loc]:
+            if coord["lng"] != 0:
+                #clean_locations.append(coord)
+                clean_locations[loc] = coord
     return clean_locations
 
 def generate_json(locations):
     #coor =  json.dumps(locations)
+    print '----------------------------'
+    results = []
     for loc in locations:
-        loc['title']='Ayuda terremoto'
-        loc['description'] = 'Help!'
+        aux = {}
+        aux['title'] = loc
+        aux['description'] = loc
+        aux['lat'] = locations[loc]['lat']
+        aux['lng'] = locations[loc]['lng']
+        results.append(aux)
+
     with open('locations.json','w+') as f:
-        f.write(json.dumps(locations))
+        f.write(json.dumps(results))
 
 
 
@@ -69,6 +80,6 @@ clean_locations = remove_zeros(old_locations)
 print(len(clean_locations))
 new_locations = group(clean_locations)
 print(len(new_locations))
-plot_loc(new_locations,'nuevas.html')
-plot_loc(old_locations,'viejas.html')
+#plot_loc(new_locations,'nuevas.html')
+#plot_loc(old_locations,'viejas.html')
 generate_json(new_locations)

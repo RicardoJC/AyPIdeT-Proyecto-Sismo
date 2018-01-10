@@ -12,6 +12,16 @@ __author__ = "Augusto Meza"
 gmaps = Client(key='AIzaSyAycEuXVjtrwQc1B53iKUGpH-tLl_zB-Ys')
 gmap = gmplot.GoogleMapPlotter(19.379162, -99.137760, 12)
 data_root = ''
+mexicocity_bounds = {
+        "northeast": {
+            "lat": 19.545890,
+            "lng": -99.014140
+        },
+        "southwest": {
+            "lat": 19.207550,
+            "lng": -99.275016
+        }
+    }
 
 
 def geocode_google(query, progress=0.0):
@@ -21,10 +31,14 @@ def geocode_google(query, progress=0.0):
     :param progress: current address being queried
     :return: dictionary containing lat and lng
     """
+
     stdout.write('\rPercentage Completed {:2.2f}%'.format(progress * 100))
-    full_address = gmaps.geocode(query)
+    full_address = gmaps.geocode(query, region="mx", bounds=mexicocity_bounds)
     if len(full_address) != 1:
+        print(query)
         return {'lat': 0, 'lng': 0}
+    elif len(full_address) > 1:
+        print(full_address)
     location = full_address[0]['geometry']['location']
     return location
 
@@ -37,12 +51,17 @@ def parse_ne(filename):
     """
     with open(filename, 'r') as f:
         street_i = -1
+        colonia_i = -1
         addresses = []
         for i, line in enumerate(f.readlines()):
             if line == 'Calle: \n':
-                street_i = i+1
+                street_i = i + 1
+            if line == 'Complemento: \n':
+                colonia_i = i + 1
             if i == street_i:
-                addresses.append(line.replace('\n', ''))
+                addresses.append(line.replace('\n', '').replace('https', '').replace('#', '').replace('esquina', ''))
+            if i == colonia_i:
+                addresses[-1] = addresses[-1] + ' , ' + line.replace('\n', '').split('#')[0]
     return addresses
 
 
@@ -81,7 +100,6 @@ def retrieve_addrs(filename, force=False):
     print(len(data), 'addresses total, limit is 2500 per day')
     return data
 
-
 def retrieve_locs(filename, force=False):
     """
     From the given filename check wheater locations have been obtained and retrieve them, otherwise parse the file
@@ -93,15 +111,18 @@ def retrieve_locs(filename, force=False):
     if force or not os.path.exists(dest_filename):
         print('Geocoding addresses')
         addrs = retrieve_addrs(filename, force=force)
-        locations = [geocode_google(query, i/len(addrs)) for i, query in enumerate(addrs)]
+        locations = {}
+        for i, query in enumerate(addrs):
+            locations[addrs[i]]=[geocode_google(query, i/len(addrs))]
+        #locations = [geocode_google(query, i/len(addrs)) for i, query in enumerate(addrs)]
         with open(dest_filename, 'wb') as f:
             pickle.dump(locations, f, pickle.HIGHEST_PROTOCOL)
         print('Completed and pickled')
     else:
         with open(dest_filename, 'rb') as f:
             locations = pickle.load(f)
-    print(len(locations), 'coordinates')
     return locations
+
 
 
 def plot_loc(locations):
@@ -116,9 +137,9 @@ def plot_loc(locations):
         if not location['lat'] == 0:
             latitudes.append(location['lat'])
             longitudes.append(location['lng'])
-    gmap.scatter(latitudes, longitudes, '#3B0B39', size=250, marker=False)
-    gmap.draw("mymap.html")
+    #gmap.scatter(latitudes, longitudes, '#3B0B39', size=250, marker=False)
+    #gmap.draw("mymap.html")
 
-
-plot_loc(retrieve_locs('ner.json'))
+retrieve_locs('ner.json')
+#plot_loc(retrieve_locs('ner.json'))
 #parse_json('ner.json')
