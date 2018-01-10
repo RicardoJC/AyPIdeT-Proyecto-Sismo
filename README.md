@@ -26,6 +26,14 @@ Contiene tres archivos:
 
 Se agregaron los subsistemas para hacer funcionar el proyecto
 
+# Autores
+* Rosa María Yolotzin Muñoz Álvarez
+* Augusto Meza Peña
+* Jose Luis Olivares Castillo
+* Guillermo López Velarde González
+* Hector Murrieta Bello
+* Ricardo Jiménez Cruz
+
 
 # Credits
 Brad Traversy (https://github.com/bradtraversy)

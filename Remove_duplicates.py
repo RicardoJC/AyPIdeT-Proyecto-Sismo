@@ -4,6 +4,9 @@ from math import radians, cos, sin, asin, sqrt
 import gmplot
 import geohash2
 import json
+__author__ = "Rosa Maria Muñoz"
+# Updates by Ricardo JC
+
 
 gmap = gmplot.GoogleMapPlotter(19.379162, -99.137760, 12)
 

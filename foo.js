@@ -1,9 +1,5 @@
-// Create map
-
-
-
-
-
+// Author Jose Luis Olivares
+// Updates by Ricardo J
 function initMap() {
   // Map options
   var options = {
